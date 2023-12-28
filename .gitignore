@@ -1,0 +1,104 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+*.vsidx
+*.v2
+.vs/ProjectEvaluation/softsecv10.metadata.v7.bin
+.vs/ProjectEvaluation/softsecv10.projects.v7.bin
+.vs/SoftSecV10/config/applicationhost.config
+.vs/SoftSecV10/v17/.suo
+ChatClient/bin/Debug/net7.0/ChatClient.deps.json
+ChatClient/bin/Debug/net7.0/ChatClient.runtimeconfig.json
+ChatClient/obj/ChatClient.csproj.nuget.dgspec.json
+ChatClient/obj/ChatClient.csproj.nuget.g.props
+ChatClient/obj/ChatClient.csproj.nuget.g.targets
+ChatClient/obj/Debug/net7.0/.NETCoreApp,Version=v7.0.AssemblyAttributes.cs
+ChatClient/obj/Debug/net7.0/ChatClient.AssemblyInfo.cs
+ChatClient/obj/Debug/net7.0/ChatClient.AssemblyInfoInputs.cache
+ChatClient/obj/Debug/net7.0/ChatClient.assets.cache
+ChatClient/obj/Debug/net7.0/ChatClient.csproj.AssemblyReference.cache
+ChatClient/obj/Debug/net7.0/ChatClient.csproj.BuildWithSkipAnalyzers
+ChatClient/obj/Debug/net7.0/ChatClient.csproj.CopyComplete
+ChatClient/obj/Debug/net7.0/ChatClient.csproj.CoreCompileInputs.cache
+ChatClient/obj/Debug/net7.0/ChatClient.csproj.FileListAbsolute.txt
+ChatClient/obj/Debug/net7.0/ChatClient.GeneratedMSBuildEditorConfig.editorconfig
+ChatClient/obj/Debug/net7.0/ChatClient.genruntimeconfig.cache
+ChatClient/obj/Debug/net7.0/ChatClient.GlobalUsings.g.cs
+ChatClient/obj/project.assets.json
+ChatClient/obj/project.nuget.cache
+ChatServer/obj/ChatServer.csproj.nuget.dgspec.json
+ChatServer/obj/ChatServer.csproj.nuget.g.props
+ChatServer/obj/ChatServer.csproj.nuget.g.targets
+ChatServer/obj/Debug/net7.0/.NETCoreApp,Version=v7.0.AssemblyAttributes.cs
+ChatServer/obj/Debug/net7.0/ChatServer.AssemblyInfo.cs
+ChatServer/obj/Debug/net7.0/ChatServer.AssemblyInfoInputs.cache
+ChatServer/obj/Debug/net7.0/ChatServer.assets.cache
+ChatServer/obj/Debug/net7.0/ChatServer.csproj.AssemblyReference.cache
+ChatServer/obj/Debug/net7.0/ChatServer.csproj.BuildWithSkipAnalyzers
+ChatServer/obj/Debug/net7.0/ChatServer.csproj.CopyComplete
+ChatServer/obj/Debug/net7.0/ChatServer.csproj.CoreCompileInputs.cache
+ChatServer/obj/Debug/net7.0/ChatServer.csproj.FileListAbsolute.txt
+ChatServer/obj/Debug/net7.0/ChatServer.GeneratedMSBuildEditorConfig.editorconfig
+ChatServer/obj/Debug/net7.0/ChatServer.genruntimeconfig.cache
+ChatServer/obj/Debug/net7.0/ChatServer.GlobalUsings.g.cs
+ChatServer/obj/Debug/net7.0/ChatServer.MvcApplicationPartsAssemblyInfo.cache
+ChatServer/obj/Debug/net7.0/ChatServer.MvcApplicationPartsAssemblyInfo.cs
+ChatServer/obj/Debug/net7.0/staticwebassets.build.json
+ChatServer/obj/Debug/net7.0/staticwebassets/msbuild.build.ChatServer.props
+ChatServer/obj/Debug/net7.0/staticwebassets/msbuild.buildMultiTargeting.ChatServer.props
+ChatServer/obj/Debug/net7.0/staticwebassets/msbuild.buildTransitive.ChatServer.props
+ChatServer/obj/project.assets.json
+ChatServer/obj/project.nuget.cache
+ChatServer/bin/Debug/net7.0/ChatServer.runtimeconfig.json
+ChatServer/bin/Debug/net7.0/ChatServer.deps.json
+ChatServer/bin/Debug/net7.0/appsettings.json
+ChatServer/bin/Debug/net7.0/appsettings.Development.json
