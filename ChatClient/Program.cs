@@ -12,7 +12,7 @@ var _client = new HttpClient();
 var BaseURL = new Uri("https://localhost:7246");
 
 var connection = new HubConnectionBuilder()
-    .WithUrl("https://localhost:7160/chathub")
+    .WithUrl("https://localhost:7246/chathub")
     .Build();
 
 

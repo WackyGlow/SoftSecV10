@@ -49,6 +49,11 @@ public class LoginRepo
         _users[user.Id] = user;
     }
 
+    public void AddUser(User user)
+    {
+        _users.Add(user.Id, user);
+    }
+
     public User GetUser(int userId)
     {
         _users.TryGetValue(userId, out User user);

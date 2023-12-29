@@ -19,15 +19,15 @@ var _bob = new User
 
 var _alice = new User
 {
-    Id = 1,
+    Id = 2,
     Name = "Alice",
     Password = "1234",
     PublicKey = 0
 };
 
 var _repo = LoginRepo.Instance;
-_repo.AddOrUpdateUser(_bob);
-_repo.AddOrUpdateUser(_alice);
+_repo.AddUser(_bob);
+_repo.AddUser(_alice);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
