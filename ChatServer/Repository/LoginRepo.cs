@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using System.Data;
+using Shared;
 
 namespace ChatServer.Repository;
 
@@ -8,6 +9,8 @@ public class LoginRepo
     private static readonly object _lock = new object();
 
     private Dictionary<int, User> _users;
+    private int sharedSecretBob;
+    private int sharedSecretAlice;
 
     private LoginRepo()
     {
@@ -28,6 +31,18 @@ public class LoginRepo
             }
         }
     }
+
+    public void UpdateUserPublicKey(string userName, int newPublicKey)
+    {
+        var user = _users.Values.FirstOrDefault(u => u.Name == userName);
+        if (user != null)
+        {
+            user.PublicKey = newPublicKey;
+            _users[user.Id] = user;
+        }
+    }
+
+    
 
     public void AddOrUpdateUser(User user)
     {

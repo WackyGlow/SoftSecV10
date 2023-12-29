@@ -1,7 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Numerics;
+using System.Text;
+using System.Threading.Tasks;
 using ChatClient;
 using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 using Shared;
+using static System.Net.WebRequestMethods;
+
+var _client = new HttpClient();
+var BaseURL = new Uri("https://localhost:7246");
 
 var connection = new HubConnectionBuilder()
     .WithUrl("https://localhost:7160/chathub")
@@ -9,10 +17,6 @@ var connection = new HubConnectionBuilder()
 
 
 
-connection.On<string, string>("ReceiveMessage", (user, message) =>
-{
-    Console.WriteLine($"{user}: {message}");
-});
 
 await connection.StartAsync();
 
@@ -23,31 +27,153 @@ var secretKey = new PrivateKey
 {
     privatekey = Convert.ToInt32(Console.ReadLine())
 };
+var publicSharedKey = await GetPublicSharedKeyAsync();
 
+var publickey = publicSharedKey.g ^ secretKey.privatekey % publicSharedKey.p;
 
+await UpdateUserPublicKeyAsync(userName, publickey);
 
+var readyToContinue = false;
 
-await connection.SendAsync("PGRequest");
-
-connection.On<PublicSharedKey>("RecievePG", x => new PublicSharedKey
+while (!readyToContinue)
 {
-    g = x.g,
-    p = x.p,
+    Console.WriteLine("When both Clients are ready, Type Ready");
+    var input = Console.ReadLine();
+
+    if (input.ToLower() == "ready")
+    {
+        readyToContinue = true;
+    }
+
+    Console.Clear();
+}
+
+var otherUserPublicKey = GetOtherUserInfo(userName).Result.PublicKey;
+
+Console.WriteLine("The Other User's Pkey is:" + otherUserPublicKey);
+
+var sharedSecret = CalculateSharedSecret(otherUserPublicKey, secretKey.privatekey, publicSharedKey.p);
+
+connection.On<string, string>("ReceiveMessage", (user, message) =>
+{
+    Console.WriteLine($"{user}: {AESHelper.Decrypt(message, sharedSecret, publicSharedKey.g)}");
 });
 
-    
-
-//Menu Loop
+//Main Loop
 while (true)
 {
-    var message = Console.ReadLine();
+    var inputMessage = Console.ReadLine();
+    
 
-    if (string.IsNullOrEmpty(message))
+    if (string.IsNullOrEmpty(inputMessage))
     {
         break;
     }
 
-    await connection.SendAsync("SendMessage", userName, message);
+    var outPutMessage = AESHelper.Encrypt(inputMessage, sharedSecret, publicSharedKey.g);
+
+    await connection.SendAsync("SendMessage", userName, outPutMessage);
 }
 
 await connection.DisposeAsync();
+
+
+
+
+
+async Task<PublicSharedKey> GetPublicSharedKeyAsync()
+{
+    try
+    {
+        // Update the URI if your API is hosted on a different base URL
+        string requestUri = $"{BaseURL}api/Login/PublicSharedKey";
+
+        // Send a GET request to the specified URI
+        var response = await _client.GetAsync(requestUri);
+
+        // Ensure we got a successful response
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+            return null;
+        }
+
+        // Read the response content as a string
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Deserialize the JSON string to PublicSharedKey object
+        var publicSharedKey = JsonConvert.DeserializeObject<PublicSharedKey>(content);
+        return publicSharedKey;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Exception occurred: {ex.Message}");
+        return null;
+    }
+}
+
+async Task<User> GetOtherUserInfo(string userName)
+{
+    try
+    {
+        // Construct the request URI
+        string requestUri = $"{BaseURL}api/Login/other/{Uri.EscapeDataString(userName)}";
+
+        // Send a GET request to the specified URI
+        var response = await _client.GetAsync(requestUri);
+
+        // Ensure we got a successful response
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+            return null;
+        }
+
+        // Read the response content as a string
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Deserialize the JSON string to User object
+        var user = JsonConvert.DeserializeObject<User>(content);
+        return user;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Exception occurred: {ex.Message}");
+        return null;
+    }
+}
+
+BigInteger CalculateSharedSecret(int otherPartyPublicKeyInt, int yourPrivateKeyInt, int pInt)
+{
+    BigInteger otherPartyPublicKey = new BigInteger(otherPartyPublicKeyInt);
+    BigInteger yourPrivateKey = new BigInteger(yourPrivateKeyInt);
+    BigInteger p = new BigInteger(pInt);
+
+    return BigInteger.ModPow(otherPartyPublicKey, yourPrivateKey, p);
+}
+
+async Task<bool> UpdateUserPublicKeyAsync(string userName, int newPublicKey)
+{
+    try
+    {
+        string requestUri = $"{BaseURL}api/Login/PublicSharedKey/{Uri.EscapeDataString(userName)}";
+
+        var content = new StringContent(JsonConvert.SerializeObject(newPublicKey), Encoding.UTF8, "application/json");
+
+        var response = await _client.PutAsync(requestUri, content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Error updating public key: {response.StatusCode}");
+            return false;
+        }
+
+        Console.WriteLine("Public key updated successfully.");
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Exception occurred: {ex.Message}");
+        return false;
+    }
+}

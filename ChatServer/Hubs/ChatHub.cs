@@ -11,16 +11,5 @@ namespace ChatServer.Hubs
         {
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
-
-
-        public User GetUserByName(string userName)
-        {
-            var _repo = LoginRepo.Instance;
-           
-            var userDetails = _repo.GetUsers().FirstOrDefault(user => user.Name != userName);
-
-            return userDetails; 
-        }
-
     }
 }
