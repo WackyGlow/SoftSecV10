@@ -151,7 +151,7 @@ async Task<bool> UpdateUserPublicKeyAsync(string userName, int newPublicKey)
 {
     try
     {
-        string requestUri = $"{BaseURL}api/Login/PublicSharedKey/{Uri.EscapeDataString(userName)}";
+        string requestUri = $"{BaseURL}/api/Login/PublicSharedKey/{(userName)}";
 
         var content = new StringContent(JsonConvert.SerializeObject(newPublicKey), Encoding.UTF8, "application/json");
 
