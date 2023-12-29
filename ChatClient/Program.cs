@@ -15,11 +15,6 @@ var connection = new HubConnectionBuilder()
     .WithUrl("https://localhost:7246/chathub")
     .Build();
 
-
-
-
-await connection.StartAsync();
-
 Console.WriteLine("Connected. Enter your name:");
 var userName = Console.ReadLine();
 Console.WriteLine("Write your Secret Key (Write a number)");
@@ -58,7 +53,7 @@ connection.On<string, string>("ReceiveMessage", (user, message) =>
 {
     Console.WriteLine($"{user}: {AESHelper.Decrypt(message, sharedSecret, publicSharedKey.g)}");
 });
-
+await connection.StartAsync();
 //Main Loop
 while (true)
 {
