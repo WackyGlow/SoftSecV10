@@ -96,4 +96,13 @@ while (true)
 
     await connection.SendAsync("InitiateKeyExchange", userName, targetUser);
 
-    // Wait fo
+    // Wait for the key exchange to complete before sending the message
+    while (sharedKey == null)
+    {
+        await Task.Delay(100); // Allow the key exchange to complete
+    }
+
+    await SendMessageEncrypted(targetUser, message);
+}
+
+await connection.DisposeAsync();

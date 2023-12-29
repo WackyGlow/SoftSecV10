@@ -102,3 +102,5 @@ ChatServer/bin/Debug/net7.0/ChatServer.runtimeconfig.json
 ChatServer/bin/Debug/net7.0/ChatServer.deps.json
 ChatServer/bin/Debug/net7.0/appsettings.json
 ChatServer/bin/Debug/net7.0/appsettings.Development.json
+ChatClient/obj/Debug/net7.0/ChatClient.sourcelink.json
+*.json
