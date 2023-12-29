@@ -17,4 +17,11 @@ public class DiffieHellman
         using var otherPubKey = ECDiffieHellmanCngPublicKey.FromByteArray(otherPublicKey, CngKeyBlobFormat.EccPublicBlob);
         return dh.DeriveKeyMaterial(otherPubKey);
     }
+
+    public byte[] GenerateSharedKey(byte[] otherPublicKey)
+    {
+        using var otherPartyPublicKey = ECDiffieHellmanCngPublicKey.FromByteArray(otherPublicKey, CngKeyBlobFormat.EccPublicBlob);
+        return dh.DeriveKeyMaterial(otherPartyPublicKey);
+    }
+
 }

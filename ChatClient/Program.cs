@@ -22,9 +22,11 @@ CryptoHelper cryptoHelper = null;
 
 connection.On<string, byte[]>("ExpectPublicKey", async (user, publicKey) =>
 {
-    sharedKey = dh.GenerateKey(publicKey);
+    Console.WriteLine($"ExpectPublicKey event received from {user}");
+    sharedKey = dh.GenerateSharedKey(publicKey);
     cryptoHelper = new CryptoHelper(sharedKey, new byte[16]); // Use an IV as needed
     await connection.SendAsync("SendPublicKey", userName, dh.PublicKey);
+    Console.WriteLine($"Public key sent to {user}");
 });
 
 connection.On<string>("KeyExchangeComplete", user =>
@@ -42,6 +44,7 @@ async Task SendMessageEncrypted(string user, string message)
 {
     var encryptedMessage = EncryptMessage(message);
     await connection.SendAsync("SendMessage", userName, encryptedMessage);
+    Console.WriteLine($"Encrypted message sent to {user}");
 }
 
 string EncryptMessage(string message)
@@ -64,7 +67,20 @@ string DecryptMessage(string encryptedMessage)
     return cryptoHelper.DecryptMessage(encryptedMessage);
 }
 
+connection.Closed += async (error) =>
+{
+    Console.WriteLine($"Connection closed: {error?.Message}");
+    await Task.Delay(new Random().Next(0, 5) * 1000);
+    await connection.StartAsync();
+};
+
 await connection.StartAsync();
+Console.WriteLine("Connection started.");
+
+while (!connection.State.Equals(HubConnectionState.Connected))
+{
+    await Task.Delay(100); // Allow the connection to complete
+}
 
 while (true)
 {
@@ -80,7 +96,4 @@ while (true)
 
     await connection.SendAsync("InitiateKeyExchange", userName, targetUser);
 
-    await SendMessageEncrypted(targetUser, message);
-}
-
-await connection.DisposeAsync();
+    // Wait fo
