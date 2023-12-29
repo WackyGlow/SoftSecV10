@@ -1,87 +1,43 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using System.Security.Cryptography;
+﻿using System.Threading.Tasks;
 using ChatClient;
-
-Console.WriteLine("Enter your name:");
-var userName = Console.ReadLine();
-while (string.IsNullOrEmpty(userName))
-{
-    Console.WriteLine("Name cannot be empty. Please enter your name:");
-    userName = Console.ReadLine();
-}
+using Microsoft.AspNetCore.SignalR.Client;
+using Shared;
 
 var connection = new HubConnectionBuilder()
-    .WithUrl("https://localhost:7246/chathub")
+    .WithUrl("https://localhost:7160/chathub")
     .Build();
 
-var dh = new DiffieHellman();
-byte[] sharedKey = null;
-CryptoHelper cryptoHelper = null;
 
-connection.On<string, byte[]>("ExpectPublicKey", async (user, publicKey) =>
-{
-    Console.WriteLine($"ExpectPublicKey event received from {user}");
-    sharedKey = dh.GenerateSharedKey(publicKey);
-    cryptoHelper = new CryptoHelper(sharedKey, new byte[16]); // Use an IV as needed
-    await connection.SendAsync("SendPublicKey", userName, dh.PublicKey);
-    Console.WriteLine($"Public key sent to {user}");
-});
-
-connection.On<string>("KeyExchangeComplete", user =>
-{
-    Console.WriteLine($"Key exchange with {user} complete.");
-});
 
 connection.On<string, string>("ReceiveMessage", (user, message) =>
 {
-    var decryptedMessage = DecryptMessage(message);
-    Console.WriteLine($"{user}: {decryptedMessage}");
+    Console.WriteLine($"{user}: {message}");
 });
 
-async Task SendMessageEncrypted(string user, string message)
-{
-    var encryptedMessage = EncryptMessage(message);
-    await connection.SendAsync("SendMessage", userName, encryptedMessage);
-    Console.WriteLine($"Encrypted message sent to {user}");
-}
+await connection.StartAsync();
 
-string EncryptMessage(string message)
+Console.WriteLine("Connected. Enter your name:");
+var userName = Console.ReadLine();
+Console.WriteLine("Write your Secret Key (Write a number)");
+var secretKey = new PrivateKey
 {
-    if (cryptoHelper == null)
-    {
-        Console.WriteLine("Shared key not established. Cannot encrypt message.");
-        return message;
-    }
-    return cryptoHelper.EncryptMessage(message);
-}
-
-string DecryptMessage(string encryptedMessage)
-{
-    if (cryptoHelper == null)
-    {
-        Console.WriteLine("Shared key not established. Cannot decrypt message.");
-        return encryptedMessage;
-    }
-    return cryptoHelper.DecryptMessage(encryptedMessage);
-}
-
-connection.Closed += async (error) =>
-{
-    Console.WriteLine($"Connection closed: {error?.Message}");
-    await Task.Delay(new Random().Next(0, 5) * 1000);
-    await connection.StartAsync();
+    privatekey = Convert.ToInt32(Console.ReadLine())
 };
 
-await connection.StartAsync();
-Console.WriteLine("Connection started.");
 
-while (!connection.State.Equals(HubConnectionState.Connected))
+
+
+await connection.SendAsync("PGRequest");
+
+connection.On<PublicSharedKey>("RecievePG", x => new PublicSharedKey
 {
-    await Task.Delay(100); // Allow the connection to complete
-}
+    g = x.g,
+    p = x.p,
+});
 
+    
+
+//Menu Loop
 while (true)
 {
     var message = Console.ReadLine();
@@ -91,18 +47,7 @@ while (true)
         break;
     }
 
-    Console.WriteLine("Enter the name of the user to initiate key exchange:");
-    var targetUser = Console.ReadLine();
-
-    await connection.SendAsync("InitiateKeyExchange", userName, targetUser);
-
-    // Wait for the key exchange to complete before sending the message
-    while (sharedKey == null)
-    {
-        await Task.Delay(100); // Allow the key exchange to complete
-    }
-
-    await SendMessageEncrypted(targetUser, message);
+    await connection.SendAsync("SendMessage", userName, message);
 }
 
 await connection.DisposeAsync();
