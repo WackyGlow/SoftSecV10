@@ -60,7 +60,7 @@ public static class AESHelper
     }
 
     // Decrypt a string using AES encryption.
-    public static string Decrypt(string cipherText, BigInteger keyBigInt, int ivInt)
+    public static string? Decrypt(string cipherText, BigInteger keyBigInt, int ivInt)
     {
         byte[] buffer = Convert.FromBase64String(cipherText);
 

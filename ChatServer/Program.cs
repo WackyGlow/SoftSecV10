@@ -14,7 +14,7 @@ var _bob = new User
     Id = 1,
     Name = "Bob",
     Password = "1234",
-    PublicKey = 0
+    PublicKey = 3
 };
 
 var _alice = new User
@@ -22,7 +22,7 @@ var _alice = new User
     Id = 2,
     Name = "Alice",
     Password = "1234",
-    PublicKey = 0
+    PublicKey = 4
 };
 
 var _repo = LoginRepo.Instance;

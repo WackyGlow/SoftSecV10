@@ -47,11 +47,12 @@ var otherUserPublicKey = GetOtherUserInfo(userName).Result.PublicKey;
 
 Console.WriteLine("The Other User's Pkey is:" + otherUserPublicKey);
 
-var sharedSecret = CalculateSharedSecret(otherUserPublicKey, secretKey.privatekey, publicSharedKey.p);
+var sharedSecret = otherUserPublicKey ^ secretKey.privatekey % publicSharedKey.p;
+var bigIntShared = CalculateSharedSecret(otherUserPublicKey, secretKey.privatekey, publicSharedKey.p);
 
 connection.On<string, string>("ReceiveMessage", (user, message) =>
 {
-    Console.WriteLine($"{user}: {AESHelper.Decrypt(message, sharedSecret, publicSharedKey.g)}");
+    Console.WriteLine($"{user}: {AESHelper.Decrypt(message, sharedSecret,publicSharedKey.g)}");
 });
 await connection.StartAsync();
 //Main Loop
@@ -112,7 +113,7 @@ async Task<User> GetOtherUserInfo(string userName)
     try
     {
         // Construct the request URI
-        string requestUri = $"{BaseURL}api/Login/other/{Uri.EscapeDataString(userName)}";
+        string requestUri = $"{BaseURL}api/Login/{Uri.EscapeDataString(userName)}";
 
         // Send a GET request to the specified URI
         var response = await _client.GetAsync(requestUri);
